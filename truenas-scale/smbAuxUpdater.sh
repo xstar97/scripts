@@ -38,6 +38,16 @@ else
     exit 1
 fi
 
+# Detect if the script is being piped (curl | bash)
+if [[ ! -t 0 ]]; then
+    # Running via curl | bash
+    echo "The script is being run from curl | bash. Listing SMB shares only."
+    display_shares
+    echo "To update a specific SMB share, run the script with the --id flag, e.g.,"
+    echo "./smbAuxUpdater.sh --id <share_id>"
+    exit 0
+fi
+
 # Parse command-line flags
 list_shares=false
 remove_aux=false
