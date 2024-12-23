@@ -28,6 +28,12 @@ display_shares() {
         '.[] | "\(.id).\n  PATH: \(.path)\n  NAME: \(.name)\n  AUXSMBCONF: \(.auxsmbconf | select(. != "") // "None")\n"'
 }
 
+# Prevent multiple executions if piped from curl
+if [[ -z "$PS1" && -t 0 ]]; then
+    echo "This script should be executed interactively. Exiting."
+    exit 1
+fi
+
 # Parse command-line flags
 list_shares=false
 remove_aux=false
