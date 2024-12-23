@@ -17,18 +17,12 @@ display_shares() {
         '.[] | "\(.id).\n  PATH: \(.path)\n  NAME: \(.name)\n  AUXSMBCONF: \(.auxsmbconf | select(. != "") // "None")\n"'
 }
 
+# Default behavior: always show the list of SMB shares
+display_shares
+
 # Parse command-line flags
-interactive_mode=false
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --list)
-            display_shares
-            exit 0
-            ;;
-        --inter)
-            interactive_mode=true
-            shift
-            ;;
         --id)
             choice="$2"
             shift 2
@@ -53,26 +47,11 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Default behavior: always show the list of SMB shares
-display_shares
-
-# If --inter flag is used, allow user interaction to select SMB share to update
-if [[ "$interactive_mode" == true ]]; then
-    while true; do
-        read -p "Enter the ID of the SMB share to update or 'q' to quit: " choice
-        if [[ "$choice" == "q" || "$choice" == "Q" ]]; then
-            echo "Exiting..."
-            exit 0
-        elif [[ "$choice" =~ ^[0-9]+$ ]]; then
-            if [[ -n "$choice" ]]; then
-                if [[ "$remove_aux" == true ]]; then
-                    update_auxsmbconf "$choice" ""
-                else
-                    update_auxsmbconf "$choice" "$auxsmbconfuser"
-                fi
-            fi
-        else
-            echo "Invalid input. Please enter a valid numeric ID or 'q' to quit."
-        fi
-    done
+# If --id flag is set, update the auxsmbconf
+if [[ -n "$choice" ]]; then
+    if [[ "$remove_aux" == true ]]; then
+        update_auxsmbconf "$choice" ""
+    else
+        update_auxsmbconf "$choice" "$auxsmbconfuser"
+    fi
 fi
