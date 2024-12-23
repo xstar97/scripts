@@ -28,16 +28,6 @@ display_shares() {
         '.[] | "\(.id).\n  PATH: \(.path)\n  NAME: \(.name)\n  AUXSMBCONF: \(.auxsmbconf | select(. != "") // "None")\n"'
 }
 
-# Prevent multiple executions if piped from curl or other non-interactive sources
-if [[ -z "$PS1" && -t 0 && ! -f /tmp/smbAuxUpdater.lock ]]; then
-    # Create a lock file to ensure single execution
-    touch /tmp/smbAuxUpdater.lock
-    trap "rm -f /tmp/smbAuxUpdater.lock" EXIT
-else
-    echo "This script should be executed interactively. Exiting."
-    exit 1
-fi
-
 # Detect if the script is being piped (curl | bash)
 if [[ ! -t 0 ]]; then
     # Running via curl | bash
