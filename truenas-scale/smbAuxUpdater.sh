@@ -28,9 +28,9 @@ display_shares() {
         '.[] | "\(.id).\n  PATH: \(.path)\n  NAME: \(.name)\n  AUXSMBCONF: \(.auxsmbconf | select(. != "") // "None")\n"'
 }
 
-# Detect if the script is being piped (curl | bash)
-if [[ ! -t 0 ]]; then
-    # Running via curl | bash
+# Check if script is running interactively or via curl
+if [[ ! -t 0 && "$1" != "--id" ]]; then
+    # Running via curl | bash, show list only and exit
     echo "The script is being run from curl | bash. Listing SMB shares only."
     display_shares
     echo "To update a specific SMB share, run the script with the --id flag, e.g.,"
